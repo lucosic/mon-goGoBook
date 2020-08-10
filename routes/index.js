@@ -8,8 +8,6 @@ mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true,  useUnifiedT
 
 //bcrypt is used to hash passwords
 var bcrypt = require('bcrypt');
-//models contains a data model of a user and a book
-require('../models');
 //Express Session
 var expressSession = require('express-session');
 router.use(expressSession({
@@ -19,7 +17,8 @@ router.use(expressSession({
   cookie: { secure: true }
 }));
 
-var User = mongoose.model('User');;
+var User = mongoose.model('User');
+var Book = mongoose.model('Book-import');
 
 router.get('/', function(req, res, next) {
   res.render('index', { title: '(Mon)goGoBook - a book recommendation system'});
@@ -34,7 +33,7 @@ router.get('/signup', function (req, res, next) {
 });
 
 router.get('/all-books', function (req, res, next) {
-  res.render('all-books', { title: 'All books' })
+  res.render('all-books', { title: 'All books', content: content })
 });
 
 router.get('/my-books', function (req, res, next) {
