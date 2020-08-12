@@ -2,12 +2,17 @@ var express = require('express');
 var router = express.Router();
 //include .env
 require('dotenv').config();
+
 //mongoose is used to connect to the MongoDB
 var mongoose = require('mongoose');
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true,  useUnifiedTopology: true});
+require('../models');
+var User = mongoose.model('User');
+var Book = mongoose.model('Book');
 
 //bcrypt is used to hash passwords
 var bcrypt = require('bcrypt');
+
 //Express Session
 var expressSession = require('express-session');
 router.use(expressSession({
@@ -17,8 +22,7 @@ router.use(expressSession({
   cookie: { secure: true }
 }));
 
-var User = mongoose.model('User');
-var Book = mongoose.model('Book-import');
+//GET requests
 
 router.get('/', function(req, res, next) {
   res.render('index', { title: '(Mon)goGoBook - a book recommendation system'});
@@ -32,8 +36,10 @@ router.get('/signup', function (req, res, next) {
   res.render('login', { title: 'Sign up', path: 'signup', alternativePath: 'login' });
 });
 
-router.get('/all-books', function (req, res, next) {
-  res.render('all-books', { title: 'All books', content: content })
+router.get('/all-books', fetchPageContent(Book), function (req, res, next) {
+
+  res.json(res.pageContent);
+  //res.render('all-books', { title: 'All books', htmlRows: htmlRows })
 });
 
 router.get('/my-books', function (req, res, next) {
@@ -44,7 +50,7 @@ router.get('/discover', function (req, res, next) {
   res.render('discover', { title: 'Discover' })
 });
 
-
+//POST requests
 
 router.post('/login', function (req, res, next) {
   User.findOne({
@@ -72,5 +78,38 @@ router.post('/signup', function (req, res, next) {
   console.log(req.body);
   return next ({message: "User saved!"});
 });
+
+//Additional functions
+
+function fetchPageContent(model){
+  return async function (req, res, next){
+    let page = parseInt(req.query.page);
+    let limit = parseInt(req.query.limit);
+    if (isNaN(page)) page = 1;
+    if (isNaN(limit)) limit = 20;
+    let startIndex = (page-1) * limit;
+    let endIndex = page * limit;
+    let pageContent = {};
+    if (endIndex < await model.countDocuments().exec()) {
+      pageContent.next = {
+        page: page + 1,
+        limit: limit
+      }
+    }
+    if (startIndex > 0) {
+      pageContent.previous = {
+        page: page - 1,
+        limit: limit
+      }
+    }
+    try {
+      pageContent.results = await Book.find().limit(limit).skip(startIndex).exec();
+      res.pageContent = pageContent;
+      next();
+    } catch (err) {
+      res.status(500).json({ message: err.message })
+    }
+  }
+}
 
 module.exports = router;

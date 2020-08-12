@@ -5,13 +5,14 @@ mongoose.model('User', new mongoose.Schema({
     passwordHash: String
 }));
 
-mongoose.model('Book-import', new mongoose.Schema({
+
+mongoose.model('Book', new mongoose.Schema({
     _id: Object,
     title: String,
     authors: String,
     average_rating: Number,
     language: String,
-    ratings_count: Int32Array,
+    ratings_count: Number,
     publication_date: String,
     publisher: String
 }));
