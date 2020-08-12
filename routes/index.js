@@ -37,9 +37,8 @@ router.get('/signup', function (req, res, next) {
 });
 
 router.get('/all-books', fetchPageContent(Book), function (req, res, next) {
-
-  res.json(res.pageContent);
-  //res.render('all-books', { title: 'All books', htmlRows: htmlRows })
+  //res.json(res.pageContent);
+  res.render('all-books', { title: 'All books', bookData: res.pageContent })
 });
 
 router.get('/my-books', function (req, res, next) {
@@ -47,6 +46,7 @@ router.get('/my-books', function (req, res, next) {
 });
 
 router.get('/discover', function (req, res, next) {
+
   res.render('discover', { title: 'Discover' })
 });
 
@@ -86,11 +86,22 @@ function fetchPageContent(model){
     let page = parseInt(req.query.page);
     let limit = parseInt(req.query.limit);
     if (isNaN(page)) page = 1;
-    if (isNaN(limit)) limit = 20;
+    if (isNaN(limit)) limit = 15;
     let startIndex = (page-1) * limit;
     let endIndex = page * limit;
+    let numberOfDocuments = parseInt(await model.countDocuments().exec());
+
     let pageContent = {};
-    if (endIndex < await model.countDocuments().exec()) {
+
+    pageContent.dataInfo = {
+      page: page,
+      limit: limit,
+      startIndex: startIndex,
+      endIndex: endIndex,
+      numberOfDocuments: numberOfDocuments
+    };
+
+    if (endIndex < numberOfDocuments) {
       pageContent.next = {
         page: page + 1,
         limit: limit
