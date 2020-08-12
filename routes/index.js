@@ -38,7 +38,7 @@ router.get('/signup', function (req, res, next) {
 
 router.get('/all-books', fetchPageContent(Book), function (req, res, next) {
   //res.json(res.pageContent);
-  res.render('all-books', { title: 'All books', bookData: res.pageContent })
+  res.render('all-books', { title: 'All books', dataArray: res.pageContent })
 });
 
 router.get('/my-books', function (req, res, next) {
@@ -92,6 +92,10 @@ function fetchPageContent(model){
     let numberOfDocuments = parseInt(await model.countDocuments().exec());
 
     let pageContent = {};
+
+    pageContent.headers = {
+
+    }
 
     pageContent.dataInfo = {
       page: page,
