@@ -19,57 +19,50 @@
           <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
             <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
               <table class="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr>
-                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                      Title
-                    </th>
-                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                      Authors
-                    </th>
-                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                      Average_rating
-                    </th>
-                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                      Book cover
-                    </th>
-                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
-                  </tr>
-                </thead>
+                <% include partials/table-header.ejs %>
                 <tbody class="bg-white divide-y divide-gray-200">
                 <%
                 if(dataArray.results.length!=0){
                 dataArray.results.forEach(function(book){
                 %>
-                <tr>
-                  <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                    <div class="flex items-center">
-                      <div class="ml-4">
-                        <div class="text-sm leading-5 font-medium text-gray-900">
-                          <%=book.title %>
-                        </div>
-                        <div class="text-sm leading-5 text-gray-500">
-                          <%=book.goodreads_book_id %>
+                  <tr>
+                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                      <div class="flex items-center">
+                        <div class="ml-4">
+                          <div class="text-sm leading-5 font-medium text-gray-900">
+                            <a href="book?id=<%=book.id %>" id="my-table-link">
+                              <%=book.title %>
+                            </a>
+                          </div>
+                          <div class="text-sm leading-5 text-gray-500">
+                            <%=book.goodreads_book_id %>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                    <div class="text-sm leading-5 text-gray-900"><%=book.authors %></div>
-                    <div class="text-sm leading-5 text-gray-500"><%=book.original_publication_year %></div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                    </td>
+                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                      <div class="text-sm leading-5 text-gray-900">
+                        <a href="?name=<%=book.authors %>" id="my-table-link">
+                          <%=book.authors %>
+                        </a>
+                      </div>
+                      <div class="text-sm leading-5 text-gray-500"><%=book.original_publication_year %></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                   <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                       <%=book.average_rating %>
                   </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
-                    <img src="<%=book.small_image_url %>" alt="<%=book.title %>">
-                  </td>
+                    </td>
+                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
+                      <img src="<%=book.small_image_url %>" alt="<%=book.title %>">
+                    </td>
+                    <!--
                   <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-                    <a href="/all-books?book-id=<%=book.book_id %>" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                    <a href="/all-books?book-id=<%=book.book_id %>" class="text-indigo-600 hover:text-indigo-900">Add to my list</a>
                   </td>
-                </tr>
+                  -->
+                  </tr>
+
                 <% }) %>
                 <% } else{ %>
                   <tr>

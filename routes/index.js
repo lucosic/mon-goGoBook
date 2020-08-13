@@ -36,7 +36,7 @@ router.get('/signup', function (req, res, next) {
   res.render('login', { title: 'Sign up', path: 'signup', alternativePath: 'login' });
 });
 
-router.get('/all-books', fetchPageContent(Book), function (req, res, next) {
+router.get('/all-books', fetchPageContent(Book, ['TITLE', 'AUTHORS', 'AVERAGE_RATING', 'BOOK COVER']), function (req, res, next) {
   //res.json(res.pageContent);
   res.render('all-books', { title: 'All books', dataArray: res.pageContent })
 });
@@ -81,7 +81,7 @@ router.post('/signup', function (req, res, next) {
 
 //Additional functions
 
-function fetchPageContent(model){
+function fetchPageContent(mongooseModel, headerNames){
   return async function (req, res, next){
     let page = parseInt(req.query.page);
     let limit = parseInt(req.query.limit);
@@ -89,20 +89,17 @@ function fetchPageContent(model){
     if (isNaN(limit)) limit = 15;
     let startIndex = (page-1) * limit;
     let endIndex = page * limit;
-    let numberOfDocuments = parseInt(await model.countDocuments().exec());
+    let numberOfDocuments = parseInt(await mongooseModel.countDocuments().exec());
 
     let pageContent = {};
-
-    pageContent.headers = {
-
-    }
 
     pageContent.dataInfo = {
       page: page,
       limit: limit,
       startIndex: startIndex,
       endIndex: endIndex,
-      numberOfDocuments: numberOfDocuments
+      numberOfDocuments: numberOfDocuments,
+      headerNames: headerNames
     };
 
     if (endIndex < numberOfDocuments) {

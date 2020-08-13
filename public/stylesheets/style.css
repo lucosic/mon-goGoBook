@@ -13,3 +13,7 @@
     width: 100%;
     height: 2.5rem;            /* Footer height */
 }
+
+#my-table-link:hover {
+    color: #564AA3;
+}
