@@ -1,47 +1,64 @@
 var mongoose = require('mongoose');
 
-mongoose.model('User', new mongoose.Schema({
-    user_id: String,
+var userSchema = new mongoose.Schema({
+    user_id: Number,
     email: String,
     passwordHash: String
-}));
+});
 
-mongoose.model('ToRead', new mongoose.Schema({
-    user_id: String,
-    book_id: String
-}));
+var toReadSchema = new mongoose.Schema({
+    user_id: Number,
+    book_id: Number
+});
 
-mongoose.model('Rating', new mongoose.Schema({
-    book_id: String,
-    user_id: String,
+var ratingSchema = new mongoose.Schema({
+    book_id: Number,
+    user_id: Number,
     rating: Number
-}));
+});
 
 var tagSchema = new mongoose.Schema({
-    tag_id: String,
+    tag_id: Number,
     tag_name: String
-})
+});
 
-mongoose.model('Tag', tagSchema);
 
 var bookTagSchema = new mongoose.Schema({
-    goodreads_book_id : String,
-    tag_id: String,
+    goodreads_book_id : Number,
+    tag_id: Number,
     count: Number
 });
 
-mongoose.model('BookTag', bookTagSchema);
 
 var bookSchema = new mongoose.Schema({
-    id: String,
-    book_id: String,
-    goodreads_book_id: String,
+    id: Number,
+    book_id: Number,
+    goodreads_book_id: Number,
     authors:  String,
-    original_publication_year:  String,
+    original_publication_year:  Number,
     title:  String,
-    average_rating:  String,
+    average_rating:  Number,
     image_url: String,
     small_image_url: String
 });
 
+var bookWithTagSchema = new mongoose.Schema({
+    id: Number,
+    book_id: Number,
+    goodreads_book_id: Number,
+    authors:  String,
+    original_publication_year:  Number,
+    title:  String,
+    average_rating:  Number,
+    image_url: String,
+    small_image_url: String,
+    tag: [tagSchema]
+});
+
+mongoose.model('User', userSchema);
+mongoose.model('ToRead', toReadSchema);
+mongoose.model('Rating', ratingSchema);
+mongoose.model('Tag', tagSchema);
+mongoose.model('BookTag', bookTagSchema);
 mongoose.model('Book', bookSchema);
+mongoose.model("BookWithTag", bookWithTagSchema);
