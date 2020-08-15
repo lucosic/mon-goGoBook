@@ -28,25 +28,6 @@ router.use(expressSession({
 
 //GET requests
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 router.get('/', function(req, res, next) {
   res.render('index', { title: '(Mon)goGoBook - a book recommendation system'});
 });
@@ -59,7 +40,7 @@ router.get('/signup', function (req, res, next) {
   res.render('login', { title: 'Sign up', path: 'signup', alternativePath: 'login' });
 });
 
-router.get('/book', fetchTableContent(bookWithTagModel), fetchTagsById(), function(req, res, next) {
+router.get('/book', fetchTableContent(bookModel), function(req, res, next) {
   var id = req.query.id;
   bookModel.findOne({
     goodreads_book_id: id
@@ -67,6 +48,7 @@ router.get('/book', fetchTableContent(bookWithTagModel), fetchTagsById(), functi
     if (err) return next(err);
     if (bookToDisplay) {
       //res.json(res.pageContent);
+      fetchTagsFromBook(req, res, next, bookToDisplay);
       res.render('book', { title: bookToDisplay.title, bookData: bookToDisplay, tagDataArray: res.pageContent });
     }
     else return next ({message: "Book lookup failed! ID does not exist!"})
@@ -104,7 +86,7 @@ router.post('/login', function (req, res, next) {
 router.post('/signup', function (req, res, next) {
   userModel.findOne({
     email: req.body.email
-  }, function (err, user){
+  }, (err, user) =>{
     if (err) return next(err);
     if (user) return next ({message: "User already exists!"});
     let newUser = new userModel({
@@ -112,49 +94,26 @@ router.post('/signup', function (req, res, next) {
       passwordHash: bcrypt.hashSync(req.body.password, 10)
     });
     newUser.save();
+    return next ({message: "User saved!"});
   });
   console.log(req.body);
-  return next ({message: "User saved!"});
+});
+
+router.post('/book', fetchTableContent(bookModel, ['TITLE', 'AUTHORS', 'AVERAGE_RATING', 'BOOK COVER']), function (req, res, next) {
+  res.render('all-books', { title: 'All books', dataArray: res.pageContent });
 });
 
 //Additional functions
 
-function fetchTagsById(){
-  return async function (req, res, next){
-    let goodReadsId = req.query.id;
-    let pageContent = {};
-    let tagArray = [];
-    console.log(`Fetching tags by ID... ${goodReadsId}`);
-    try {
-      let listBookTag = await bookTagModel.find({goodreads_book_id: goodReadsId}).exec();
-      //let newTag;
-      pageContent.dataInfo = {
-        numberOfDocuments: listBookTag.length
-      };
-      if (listBookTag.length > 0){
-        listBookTag.forEach(function (currentBookTag) {
-          //newTag = tagModel.findOne({tag_id: currentBookTag.tag_id}).exec();
-          tagModel.findOne(
-              {
-                tag_id: currentBookTag.tag_id
-              }, function (err, newTag) {
-                if (err) return next(err);
-                if (newTag){
-                  tagArray.push(new tagModel({
-                    tag_id: newTag.tag_id,
-                    tag_name: newTag.tag_name
-                  }));
-                }
-          });
-        });
-        pageContent.results = tagArray;
-      }
-      res.pageContent = pageContent;
-      next();
-    } catch (err) {
-      res.status(500).json({ message: err.message })
-    }
-  }
+function fetchTagsFromBook(req, res, next, book) {
+  let tagArray = [];
+  tagArray = book.tag;
+  let pageContent = {}; // sadrži datainfo (numberOfDocuments) i results (tag_id, tag_name)
+  pageContent.dataInfo = {
+    numberOfDocuments: tagArray.length
+  };
+  pageContent.results = tagArray;
+  res.pageContent = pageContent;
 }
 
 function fetchTableContent(mongooseModel, headerNames){
@@ -162,6 +121,7 @@ function fetchTableContent(mongooseModel, headerNames){
     let page = parseInt(req.query.page);
     let limit = parseInt(req.query.limit);
     let tagId = parseInt(req.query.tag);
+    let bookSearch = req.body.bookSearch;
 
     if (isNaN(page)) page = 1;
     if (isNaN(limit)) limit = 15;
@@ -170,21 +130,27 @@ function fetchTableContent(mongooseModel, headerNames){
 
     let numberOfDocuments; //= parseInt(await mongooseModel.countDocuments().exec());
 
-
     let pageContent = {};
 
     try {
-      if (isNaN(tagId)){ // isključeno pretraživanje prema tag-u
+      if (bookSearch !== undefined){ //pretraživanje prema nazivu
+        //{title: new RegExp('^'+bookSearch+'$', "i")}
+        console.log(`Book search: ${bookSearch}`);
+        pageContent.results = await mongooseModel.find({title: new RegExp(bookSearch, "i")}).limit(limit).skip(startIndex).exec();
+        //console.log(`Book title: ${pageContent.results.title}`);
+        numberOfDocuments = parseInt(await mongooseModel.countDocuments({title: new RegExp(bookSearch, "i")}).exec());
+      }
+      else if (isNaN(tagId)){ // sve knjige
         pageContent.results = await mongooseModel.find().limit(limit).skip(startIndex).exec();
         numberOfDocuments = parseInt(await mongooseModel.countDocuments().exec());
       }
-      else { // uključeno pretraživanje prema tag-u
-        pageContent.results = await bookWithTagModel.find({
+      else { // pretraživanje prema tag-u
+        pageContent.results = await mongooseModel.find({
           'tag.tag_id': tagId
         }).limit(limit).skip(startIndex).exec();
-        numberOfDocuments = (await bookWithTagModel.find({
+        numberOfDocuments = parseInt(await mongooseModel.countDocuments({
           'tag.tag_id': tagId
-        }).exec()).length;
+        }).exec());
 
         let searchedTag = await tagModel.findOne({tag_id: tagId}).exec();
         pageContent.tagInfo = {
@@ -224,5 +190,96 @@ function fetchTableContent(mongooseModel, headerNames){
     }
   }
 }
+
+
+router.get('/fix-db-model-now', fixDbModel(), function(req, res, next) {
+  res.render('index', { title: '(Mon)goGoBook - a book recommendation system'});
+});
+
+function fixDbModel(){
+  return async function (req, res, next) {
+    console.log("It begins!");
+    let content = {};
+    let startIndex = 0;
+    let endIndex = 9759;
+    let counter = 0;
+    let percentage;
+
+    try {
+      content.tagModel = await tagModel.find().exec();
+      console.log("Preuzeo podatke oznaka.");
+    } catch (err) {
+      console.log("GREŠKA! Nisam preuzeo podatke oznaka.");
+      res.status(500).json({message: err.message})
+    }
+    for(let boli = 0; boli < 100; boli++) {
+      try {
+        content.bookWithTagModel = await bookWithTagModel.find().limit(100).skip(boli*100).exec();
+        console.log("Preuzeo podatke knjiga s oznakama.");
+      } catch (err) {
+        console.log("GREŠKA! Nisam preuzeo podatke knjiga s oznakama.");
+        res.status(500).json({message: err.message})
+      }
+
+      let listOfBooks = [];
+      let listOfTags = [];
+
+      //prođi sve knjige
+      for (let i = 0; i < content.bookWithTagModel.length; i++) {
+        let bookWithTag = content.bookWithTagModel[i];
+        listOfTags = [];
+        //prođi sve tagove određene knjige
+        for (let j = 0; j < bookWithTag.tag.length; j++) {
+          let bookWithTagTag = bookWithTag.tag[j];
+          //prođi sve tagove
+          for (let z = 0; z < content.tagModel.length; z++) {
+            let tag = content.tagModel[z];
+            //usporedi id tagova
+            if (bookWithTagTag.tag_id === tag.tag_id) {
+              listOfTags.push(new tagModel({
+                tag_id: tag.tag_id,
+                tag_name: tag.tag_name
+              }));
+              break;
+            }//usporedi id tagova
+          }//prođi sve tagove
+        }//prođi sve tagove određene knjige
+        //dodaj knjigu
+        if (listOfTags.length > 0) {
+          listOfBooks.push(new bookWithTagModel({
+            id: bookWithTag.id,
+            book_id: bookWithTag.book_id,
+            goodreads_book_id: bookWithTag.goodreads_book_id,
+            authors: bookWithTag.authors,
+            original_publication_year: bookWithTag.original_publication_year,
+            title: bookWithTag.title,
+            average_rating: bookWithTag.average_rating,
+            image_url: bookWithTag.image_url,
+            small_image_url: bookWithTag.small_image_url,
+            tag: listOfTags
+          }));
+          counter++;
+          percentage = (counter / (endIndex - startIndex) * 100).toFixed(2);
+          console.log(`${percentage}% Saving book #${counter} Name: ${bookWithTag.title}`);
+        }
+      }//prođi sve knjige
+
+      //insert svih knjiga
+      console.log("Insering many...");
+      if (listOfBooks.length > 0) {
+        bookModel.insertMany(listOfBooks, function (err, docs) {
+          if (err) return next(err);
+          else if (docs) return ({message: "Uspjeh"});
+        });
+        console.log("Done inserting many!");
+      }
+      console.log(`!----SAVED-${boli}/100%----!`);
+      next();
+    }//Do tu boli
+    console.log("DONEDONEDONE");
+  }
+}
+
+
 
 module.exports = router;

@@ -40,20 +40,20 @@
                         </dt>
                         <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-<%
-if (bookData.average_rating > 4) {
-%>
-                                bg-green-100 text-green-800">
-<%
-}
-else{
-%>
-                                bg-gray-100 text-gray-800">
-<%
-}
-%>
-                    <%=bookData.average_rating %>
-                  </span>
+                                <%
+                                if (bookData.average_rating > 4) {
+                                    %>
+                                    bg-green-100 text-green-800">
+                                    <%
+                                }
+                                else{
+                                    %>
+                                    bg-gray-100 text-gray-800">
+                                    <%
+                                }
+                                %>
+                                <%=bookData.average_rating %>
+                              </span>
                         </dd>
                     </div>
                     <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -62,33 +62,31 @@ else{
                         </dt>
                         <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
                             <ul class="border border-gray-200 rounded-md">
-<%
-
-if(tagDataArray.dataInfo.numberOfDocuments != 0){
-    tagDataArray.results.forEach(function(tag) {
-    %>
-                                <li class="border-t border-gray-200 pl-3 pr-4 py-3 flex items-center justify-between text-sm leading-5">
-                                    <div class="w-0 flex-1 flex items-center">
-                                        <svg class="flex-shrink-0 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z" clip-rule="evenodd" />
-                                        </svg>
-                                        <span class="ml-2 flex-1 w-0 truncate">
-                                            <a href="/all-books?tag=<%=tag.tag_id%>" id="my-table-link">
-                                                <%=tag.tag_name%>
-                                            </a>
-                                        </span>
-                                    </div>
-                                    <div class="ml-4 flex-shrink-0">
-                                        <a href="/all-books?tag=<%=tag.tag_id%>" class="font-medium text-indigo-600 hover:text-indigo-500 transition duration-150 ease-in-out">
-                                            Other books with this tag
-                                        </a>
-                                    </div>
-                                </li>
-    <%
-    });
-
-}
-%>
+                                <%
+                                if(tagDataArray.dataInfo.numberOfDocuments != 0){
+                                    tagDataArray.results.forEach(function(tag) {
+                                        %>
+                                        <li class="border-t border-gray-200 pl-3 pr-4 py-3 flex items-center justify-between text-sm leading-5">
+                                            <div class="w-0 flex-1 flex items-center">
+                                                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z" clip-rule="evenodd" />
+                                                </svg>
+                                                <span class="ml-2 flex-1 w-0 truncate">
+                                                    <a href="/all-books?tag=<%=tag.tag_id%>" id="my-table-link">
+                                                        <%=tag.tag_name%>
+                                                    </a>
+                                                </span>
+                                            </div>
+                                            <div class="ml-4 flex-shrink-0">
+                                                <a href="/all-books?tag=<%=tag.tag_id%>" class="font-medium text-indigo-600 hover:text-indigo-500 transition duration-150 ease-in-out">
+                                                    Other books with this tag
+                                                </a>
+                                            </div>
+                                        </li>
+                                    <%
+                                    });
+                                }
+                                %>
                             </ul>
                         </dd>
                     </div>

@@ -39,7 +39,8 @@ var bookSchema = new mongoose.Schema({
     title:  String,
     average_rating:  Number,
     image_url: String,
-    small_image_url: String
+    small_image_url: String,
+    tag: [tagSchema]
 });
 
 var bookWithTagSchema = new mongoose.Schema({
