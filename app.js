@@ -15,6 +15,26 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 
 var app = express();
+//mongoose is used to connect to the MongoDB
+const mongoose = require('mongoose');
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true,  useUnifiedTopology: true});
+//Express Session & connect-mongo
+const expressSession = require('express-session');
+const MongoStore = require('connect-mongo')(expressSession);
+app.use(expressSession({
+  secret: process.env.EXPRESS_SESSION_SECRET,
+  resave: true,
+  saveUninitialized: false,
+  cookie: { secure: false },
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection,
+    //autoRemove: 'interval',
+    //autoRemoveInterval: 10 // In minutes. Default
+    ttl: 14 * 24 * 60 * 60 // = 14 days. Default
+    //autoRemove: 'disabled'
+  })
+}));
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

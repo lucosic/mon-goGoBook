@@ -1,0 +1,73 @@
+<!-- Table -->
+<div class="flex flex-col">
+    <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+                <% include ./table-header.ejs %>
+                <tbody class="bg-white divide-y divide-gray-200">
+                <%
+                if(bookResults.length!=0){
+                bookResults.forEach(function(book){
+                %>
+                <tr>
+                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                        <div class="flex items-center">
+                            <div class="ml-4">
+                                <div class="text-sm leading-5 font-medium text-gray-900">
+                                    <a href="book?id=<%=book.goodreads_book_id %>" id="my-table-link">
+                                        <%=book.title %>
+                                    </a>
+                                </div>
+                                <div class="text-sm leading-5 text-gray-500">
+                                    <%=book.goodreads_book_id %>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                        <div class="text-sm leading-5 text-gray-900">
+                            <a href="?author=<%=book.authors %>" id="my-table-link">
+                                <%=book.authors %>
+                            </a>
+                        </div>
+                        <div class="text-sm leading-5 text-gray-500"><%=book.original_publication_year %></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                          <%
+                        if (book.average_rating > 4) {
+                        %>
+                            bg-green-100 text-green-800">
+                            <%
+                            }
+                            else{
+                            %>
+                                bg-gray-100 text-gray-800">
+                            <%
+                            }
+                            %>
+                            <%=book.average_rating %>
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
+                        <img src="<%=book.small_image_url %>" alt="<%=book.title %>">
+                    </td>
+                    <!--
+                      <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+                        <a href="/all-books?book-id=<%=book.book_id %>" class="text-indigo-600 hover:text-indigo-900">Add to my list</a>
+                      </td>
+                      -->
+                </tr>
+                <%
+                })
+                } else{ %>
+                    <tr>
+                        <td colspan="7">No Data Found</td>
+                    </tr>
+                <%
+                } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

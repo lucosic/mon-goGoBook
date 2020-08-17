@@ -1,11 +1,5 @@
 var mongoose = require('mongoose');
 
-var userSchema = new mongoose.Schema({
-    user_id: Number,
-    email: String,
-    passwordHash: String
-});
-
 var toReadSchema = new mongoose.Schema({
     user_id: Number,
     book_id: Number
@@ -29,7 +23,6 @@ var bookTagSchema = new mongoose.Schema({
     count: Number
 });
 
-
 var bookSchema = new mongoose.Schema({
     id: Number,
     book_id: Number,
@@ -41,6 +34,13 @@ var bookSchema = new mongoose.Schema({
     image_url: String,
     small_image_url: String,
     tag: [tagSchema]
+});
+
+var userSchema = new mongoose.Schema({
+    user_id: Number,
+    email: String,
+    passwordHash: String,
+    books: [bookSchema]
 });
 
 var bookWithTagSchema = new mongoose.Schema({

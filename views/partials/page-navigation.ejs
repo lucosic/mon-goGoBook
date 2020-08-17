@@ -23,6 +23,7 @@
         isNextDefined = true;
         nextPageNumber = dataArray.next.page;
         nextLimit = dataArray.next.limit;
+    var bookSearchString = dataArray.bookSearchString;
 }
 %>
 <!-- Page navigation -->
@@ -31,14 +32,14 @@
         <%
         if (isPreviousDefined){
             %>
-            <a href="?page=<%=previousPageNumber%>&limit=<%=previousLimit%><% if(isTagDefined){%>&tag=<%=tagId%><%}%>" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+            <a href="?page=<%=previousPageNumber%>&limit=<%=previousLimit%><% if(isTagDefined){%>&tag=<%=tagId%><%}%><% if(bookSearchString !== undefined){%>&bookSearch=<%=bookSearchString%><%}%>" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
                 Previous
             </a>
             <%
         }
         if (isNextDefined){
             %>
-            <a href="?page=<%=nextPageNumber%>&limit=<%=nextLimit%><% if(isTagDefined){%>&tag=<%=tagId%><%}%>" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+            <a href="?page=<%=nextPageNumber%>&limit=<%=nextLimit%><% if(isTagDefined){%>&tag=<%=tagId%><%}%><% if(bookSearchString !== undefined){%>&bookSearch=<%=bookSearchString%><%}%>" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
                 Next
             </a>
             <%
@@ -65,7 +66,7 @@
         <div>
             <nav class="relative z-0 inline-flex shadow-sm">
                 <% if (isPreviousDefined){ %>
-                    <a href="?page=<%=previousPageNumber%>&limit=<%=previousLimit%><% if(isTagDefined){%>&tag=<%=tagId%><%}%>" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150" aria-label="Previous">
+                    <a href="?page=<%=previousPageNumber%>&limit=<%=previousLimit%><% if(isTagDefined){%>&tag=<%=tagId%><%}%><% if(bookSearchString !== undefined){%>&bookSearch=<%=bookSearchString%><%}%>" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150" aria-label="Previous">
                         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                         </svg>
@@ -73,7 +74,7 @@
                     <%
                     for (let i=dataArray.dataInfo.page-3; i < dataArray.dataInfo.page; i++){
                         if (i > 0){ %>
-                            <a href="?page=<%=i%>&limit=<%=previousLimit%><% if (isTagDefined){%>&tag=<%=tagId%><%}%>" class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                            <a href="?page=<%=i%>&limit=<%=previousLimit%><% if (isTagDefined){%>&tag=<%=tagId%><%}%><% if(bookSearchString !== undefined){%>&bookSearch=<%=bookSearchString%><%}%>" class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
                                 <%=i%>
                             </a>
                             <%
@@ -86,13 +87,13 @@
                 if (isNextDefined){
                 for (let i=dataArray.dataInfo.page + 1; i <= (dataArray.dataInfo.numberOfDocuments/dataArray.dataInfo.limit) && i < (dataArray.dataInfo.page + 4); i++){
                 %>
-                <a href="?page=<%=i%>&limit=<%=dataArray.next.limit%><% if(isTagDefined){%>&tag=<%=tagId%><%}%>" class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                <a href="?page=<%=i%>&limit=<%=dataArray.next.limit%><% if(isTagDefined){%>&tag=<%=tagId%><%}%><% if(bookSearchString !== undefined){%>&bookSearch=<%=bookSearchString%><%}%>" class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
                     <%=i%>
                 </a>
                 <%
                 }
                 %>
-                <a href="?page=<%=nextPageNumber%>&limit=<%=nextLimit%><% if(isTagDefined){%>&tag=<%=tagId%><%}%>" class="-ml-px relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150" aria-label="Next">
+                <a href="?page=<%=nextPageNumber%>&limit=<%=nextLimit%><% if(isTagDefined){%>&tag=<%=tagId%><%}%><% if(bookSearchString !== undefined){%>&bookSearch=<%=bookSearchString%><%}%>" class="-ml-px relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150" aria-label="Next">
                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                     </svg>

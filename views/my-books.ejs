@@ -1,18 +1,35 @@
+<%
+var bookResults = dataArray.results;
+%>
+
 <!DOCTYPE html>
 <html>
     <% include partials/head.ejs %>
-  <body>
+    <body>
     <div id="my-page-container">
       <div id="my-content-wrap">
-        <!-- Header -->
         <div>
           <% include partials/header.ejs %>
         </div>
 
-        <!--  -->
-
+        <!-- page navigation -->
+        <div>
+          <% include partials/page-navigation.ejs %>
+          <% include partials/search-form.ejs %>
         </div>
-      <%include partials/footer.ejs%>
+
+        <!-- Table -->
+        <div>
+          <% include partials/book-table.ejs %>
+        </div>
+
+        <!-- page navigation -->
+        <div>
+          <% include partials/page-navigation.ejs %>
+        </div>
+      </div>
+
+      <% include partials/footer.ejs%>
     </div>
-  </body>
+    </body>
 </html>

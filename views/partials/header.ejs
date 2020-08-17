@@ -1,4 +1,13 @@
 <!-- Computer screen / Tablet -->
+<%
+    console.log(`Req user: ${req.isAuthenticated()}`);
+    var loginAction = "login";
+    var loginActionTextShown = "Log in";
+    if (req.isAuthenticated()){
+        loginAction = `logout`;
+        loginActionTextShown = `(${req.user.email}) Log out`
+    }
+%>
 <div class="relative pt-6 px-4 sm:px-6 lg:px-8">
     <nav class="relative flex items-center justify-between sm:h-10 lg:justify-start">
         <div class="flex items-center flex-grow flex-shrink-0 lg:flex-grow-0">
@@ -10,10 +19,19 @@
         </div>
         <div class="hidden md:block md:ml-10 md:pr-4">
             <a href="/all-books" class="font-medium text-gray-500 hover:text-gray-900 transition duration-150 ease-in-out">All books</a>
-            <a href="/my-books" class="ml-8 font-medium text-gray-500 hover:text-gray-900 transition duration-150 ease-in-out">My books</a>
+            <%
+            if (req.isAuthenticated()){
+                %>
+                <a href="/my-books" class="ml-8 font-medium text-gray-500 hover:text-gray-900 transition duration-150 ease-in-out">My books</a>
+                <%
+            }
+            %>
             <a href="/discover" class="ml-8 font-medium text-gray-500 hover:text-gray-900 transition duration-150 ease-in-out">Discover</a>
-            <a href="../#project-info" class="ml-8 font-medium text-gray-500 hover:text-gray-900 transition duration-150 ease-in-out">Project info</a>
-            <a href="/login" class="ml-8 font-medium text-indigo-600 hover:text-indigo-900 transition duration-150 ease-in-out">Log in</a>
+            <a href="/main#project-info" class="ml-8 font-medium text-gray-500 hover:text-gray-900 transition duration-150 ease-in-out">Project info</a>
+            <a href="/<%=loginAction%>" class="whitespace-no-wrap text-base leading-6 font-medium text-indigo-600 hover:text-gray-900 focus:outline-none focus:text-gray-900">
+                <%=loginActionTextShown%>
+            </a>
+
         </div>
     </nav>
 </div>
@@ -35,11 +53,11 @@
                 <a href="/all-books" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition duration-150 ease-in-out" role="menuitem">All books</a>
                 <a href="/my-books" class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition duration-150 ease-in-out" role="menuitem">My books</a>
                 <a href="/discover" class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition duration-150 ease-in-out" role="menuitem">Discover</a>
-                <a href="../#project-info" class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition duration-150 ease-in-out" role="menuitem">Project info</a>
+                <a href="/main#project-info" class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition duration-150 ease-in-out" role="menuitem">Project info</a>
             </div>
             <div>
-                <a href="/login" class="block w-full px-5 py-3 text-center font-medium text-indigo-600 bg-gray-50 hover:bg-gray-100 hover:text-indigo-700 focus:outline-none focus:bg-gray-100 focus:text-indigo-700 transition duration-150 ease-in-out" role="menuitem">
-                    Log in
+                <a href="/<%=loginAction%>" class="block w-full px-5 py-3 text-center font-medium text-indigo-600 bg-gray-50 hover:bg-gray-100 hover:text-indigo-700 focus:outline-none focus:bg-gray-100 focus:text-indigo-700 transition duration-150 ease-in-out" role="menuitem">
+                    <%=loginActionTextShown%>
                 </a>
             </div>
         </div>
