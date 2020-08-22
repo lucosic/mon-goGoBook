@@ -18,6 +18,8 @@ var app = express();
 //mongoose is used to connect to the MongoDB
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true,  useUnifiedTopology: true});
+
+
 //Express Session & connect-mongo
 const expressSession = require('express-session');
 const MongoStore = require('connect-mongo')(expressSession);

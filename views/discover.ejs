@@ -1,3 +1,8 @@
+<%
+var bookResults = dataArray.topResults;
+var bookResultsAuthor = dataArray.topAuthorResults;
+var bookResultsUsers = dataArray.bookResultsUsers;
+%>
 <!DOCTYPE html>
 <html>
     <% include partials/head.ejs %>
@@ -8,8 +13,33 @@
           <div>
             <% include partials/header.ejs %>
           </div>
+          <!-- Top books (5/100) -->
+          <div>
+            <h3 class="mt-2 mb-3 ml-5 text-3xl leading-6 font-extrabold tracking-tight text-indigo-900 text-lg">
+              Random 5 from 100 top rated books
+            </h3>
+            <% include partials/book-table.ejs %>
+          </div>
+          <% if (req.isAuthenticated() && dataArray.dataInfo.numberOfBooksOnUserList > 0){ %>
+          <!-- Top books by author -->
+          <div>
+            <h3 class="mt-10 mb-3 ml-5 text-3xl leading-6 font-extrabold tracking-tight text-indigo-900 text-lg">
+              Top 3 books by author "<%=dataArray.dataInfo.authorName%>"
+            </h3>
+            <% include partials/book-table-author.ejs %>
+          </div>
 
-          <!--  -->
+          <!-- Top books by other users -->
+          <div>
+            <h3 class="mt-10 mb-3 ml-5 text-3xl leading-6 font-extrabold tracking-tight text-indigo-900 text-lg">
+              Top 10 books other users liked based on book "<%=dataArray.dataInfo.bookName%>"
+            </h3>
+            <% include partials/book-table-users.ejs %>
+          </div>
+
+          <%
+          }
+          %>
 
         </div>
           <%include partials/footer.ejs%>

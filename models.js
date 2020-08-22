@@ -40,7 +40,7 @@ var userSchema = new mongoose.Schema({
     user_id: Number,
     email: String,
     passwordHash: String,
-    books: [bookSchema]
+    to_read: [bookSchema]
 });
 
 var bookWithTagSchema = new mongoose.Schema({
