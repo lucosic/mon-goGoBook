@@ -1,7 +1,7 @@
 <%
  addToListColour = "bg-indigo-700";
  addtoListText = "Add to my books list";
- if (gumbAktivan === true){
+ if (buttonActive === true){
      addToListColour = "bg-gray-300";
      addtoListText = "Remove from my books list";
  }
@@ -46,7 +46,7 @@
                                 <form class="mt-8" action="/add-to-list" method="POST">
                                     <div class="rounded-md shadow-sm inline-flex">
                                         <input type="hidden" name="bookGoodId" value="<%=bookData.goodreads_book_id%>">
-                                        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:<%=addToListColour%>> transition duration-150 ease-in-out">
+                                        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white <%=addToListColour%> hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:<%=addToListColour%> transition duration-150 ease-in-out">
                                             <%=addtoListText%>
                                         </button>
                                     </div>

@@ -107,34 +107,13 @@ router.get('/signup', function (req, res, next) {
   res.render('login', { title: 'Sign up', path: 'signup', alternativePath: 'login' , req: req});
 });
 
-router.get('/book', function(req, res, next) {
-  var id = req.query.id;
-  bookModel.findOne({
-    goodreads_book_id: id
-  }, (err, bookToDisplay) => {
-    if (err) return next(err);
-    if (bookToDisplay) {
-      //res.json(res.pageContent);
-      fetchTagsFromBook(req, res, next, bookToDisplay);
-
-      let gumbAktivan = false;
-      if (req.isAuthenticated()){
-        userModel.findById(req.user.id, (err, user) => {
-          if (err) return next(err);
-          if (user){
-            console.log(`Gumb aktivan 2: ${gumbAktivan}`);
-            for (let i=0; i < user.to_read.length; i++){
-              if (user.to_read[i].id === bookToDisplay.id){
-                gumbAktivan = true;
-                break;
-              }
-            }
-          }
-        });
-      }
-      res.render('book', {title: bookToDisplay.title, bookData: bookToDisplay, tagDataArray: res.pageContent, req: req , gumbAktivan: gumbAktivan});
-    }
-    else return next ({message: "Book lookup failed! ID does not exist!"})
+router.get('/book', getAddButtonState(), function(req, res, next) {
+  res.render('book', {
+    title: res.bookInformation.bookToDisplay.title,
+    bookData: res.bookInformation.bookToDisplay,
+    tagDataArray: res.pageContent,
+    req: req,
+    buttonActive: res.bookInformation.buttonActive
   });
 });
 
@@ -180,6 +159,35 @@ router.post('/add-to-list', addOrRemoveFromList(), function (req, res, next) {
 });
 
 //Additional functions
+
+function getAddButtonState() {
+  return async function (req, res, next){
+    let bookInformation = {};
+    let buttonActive = false;
+    let bookId = parseInt(req.query.id);
+    let bookToDisplay = await bookModel.findOne({goodreads_book_id: bookId}).exec();
+    fetchTagsFromBook(req, res, next, bookToDisplay);
+
+    if (req.isAuthenticated()){
+      console.log(`Ulazi`);
+      let id = req.query.id;
+      let user = await userModel.findById(req.user.id).exec();
+      for (let i=0; i < user.to_read.length; i++){
+        console.log(`Test ${i} za ${bookId}`);
+        if (user.to_read[i].goodreads_book_id === bookId){
+          console.log(`BAM BAM`);
+          buttonActive = true;
+        }
+      }
+    }
+    bookInformation = {
+      bookToDisplay: bookToDisplay,
+      buttonActive:buttonActive
+    };
+    res.bookInformation = bookInformation;
+    next();
+  }
+}
 
 function discoverBooks() {
   return async function (req, res, next){
@@ -246,14 +254,11 @@ function discoverBooks() {
           let comparasionBook = userBooks[Math.floor(Math.random() * userBooks.length)];
           bookName = comparasionBook.title;
 
+          //fetch all related users lists
           let allUserLists = await userModel.find({"to_read.book_id": comparasionBook.book_id}).exec();
 
+          //push all books from users list to a single list "comparasionListWithDuplicates"
           let comparasionListWithDuplicates =[];
-          /*
-          for (let i = 0; i < allUserLists.length; i++){
-            comparasionListWithDuplicates.push(allUserLists[i].to_read);
-          }
-           */
           for (let i = 0; i < allUserLists.length; i++){
             let toReadList = allUserLists[i].to_read;
             for (let j = 0; j < toReadList.length; j++){
@@ -267,15 +272,14 @@ function discoverBooks() {
             const j = Math.floor(Math.random() * (i + 1));
             [comparasionListWithDuplicates[i], comparasionListWithDuplicates[j]] = [comparasionListWithDuplicates[j], comparasionListWithDuplicates[i]];
           }
-
+          //remove duplicates
           let comparasionList= [];
           console.log(`Length ${comparasionListWithDuplicates.length}`);
-          for (let i = 0; i < comparasionListWithDuplicates.length; i++){
+          for (let i = 0; i < comparasionListWithDuplicates.length && i < 10; i++){
             let isBookAlreadySaved = false;
             for (let j = 0; j < comparasionList.length; j++){
               if (comparasionListWithDuplicates[i].book_id === comparasionList[j].book_id ){
                 isBookAlreadySaved = true;
-                console.log("Usporedba TRUE");
                 break;
               }
             }
@@ -286,11 +290,10 @@ function discoverBooks() {
               }
               if (isOnUsersList === false) {
                 comparasionList.push(comparasionListWithDuplicates[i]);
-                console.log(`Usporedba FALSE - upisujem ${comparasionListWithDuplicates[i].title}`);
               }
             }
           }
-
+          //save
           pageContent.bookResultsUsers = comparasionList;
         }
       }
